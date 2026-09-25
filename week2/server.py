@@ -2,6 +2,7 @@ from http.server import BaseHTTPRequestHandler, HTTPServer
 from modules.courses import get_courses
 from modules.students import get_students
 from modules.assignment import get_assignments
+from modules.enrollments import get_enrollments
 import json
 
 
@@ -22,6 +23,8 @@ class SimpleHandler(BaseHTTPRequestHandler):
             self.send_json({"students": get_students()})
         elif self.path == "/assignments":
             self.send_json({"assignments": get_assignments()})
+        elif self.path == "/enrollments":
+            self.send_json({"enrollments": get_enrollments()})
 
 server = HTTPServer(("localhost", 8000), SimpleHandler)
 print("Server running at http://localhost:8000")
