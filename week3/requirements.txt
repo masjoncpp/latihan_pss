@@ -1,0 +1,3 @@
+# Aplikasi latihan ini hanya menggunakan Python standard library.
+# File tetap dibuat untuk menunjukkan pola dependency project.
+psycopg[binary]
