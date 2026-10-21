@@ -1,6 +1,5 @@
 from django.conf import settings
 from django.db import models
-from users.models import User
 
 
 class Course(models.Model):
@@ -44,3 +43,67 @@ class Lesson(models.Model):
 
     def __str__(self):
         return f"{self.course.code} - {self.title}"
+
+
+class Enrollment(models.Model):
+    student = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="enrollments",
+        limit_choices_to={"role": "STUDENT"},
+    )
+    course = models.ForeignKey(
+        Course,
+        on_delete=models.CASCADE,
+        related_name="enrollments",
+    )
+    enrolled_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["student", "course"],
+                name="unique_student_course",
+            )
+        ]
+
+    def __str__(self):
+        return f"{self.student.username} -> {self.course.code}"
+
+
+class Assignment(models.Model):
+    course = models.ForeignKey(
+        Course,
+        on_delete=models.CASCADE,
+        related_name="assignments",
+    )
+    title = models.CharField(max_length=200)
+    description = models.TextField(blank=True)
+    deadline = models.DateTimeField()
+
+    def __str__(self):
+        return f"{self.course.code} - {self.title}"
+
+
+class Submission(models.Model):
+    assignment = models.ForeignKey(
+        Assignment,
+        on_delete=models.CASCADE,
+        related_name="submissions",
+    )
+    student = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="submissions",
+    )
+    content = models.TextField(blank=True)
+    submitted_at = models.DateTimeField(auto_now_add=True)
+    grade = models.DecimalField(
+        max_digits=5,
+        decimal_places=2,
+        null=True,
+        blank=True,
+    )
+
+    def __str__(self):
+        return f"{self.assignment.title} - {self.student.username}"
