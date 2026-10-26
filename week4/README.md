@@ -48,7 +48,7 @@ week4/
     ├── tests.py
     ├── management/
     │   └── commands/
-    │       └── seed_data.py
+    │       └── seed_demo.py
     └── migrations/
         ├── __init__.py
         ├── 0001_initial.py
@@ -80,18 +80,18 @@ docker compose exec app python manage.py migrate
 ### C. Seed Sample Data (Idempotent)
 Jalankan command management untuk mengisi database dengan data awal sesuai modul:
 ```bash
-docker compose exec app python manage.py seed_data
+docker compose exec app python manage.py seed_demo
 ```
 
 Data yang dibuat:
 - **Admin**: `admin` (Role: ADMIN, is_staff=True, is_superuser=True)
 - **Dosen / Lecturers**: `suprayogi`, `agus`, `ayu`, `bagus`, `heru` (Role: LECTURER)
 - **Student**: `fauzan` (Role: STUDENT)
-- **Course**: `PSS01` - Pemrograman Sisi Server
-- **Lessons**: 3 materi pelajaran terurut
+- **Courses**: `PSS01` s/d `PSS05` (*Pemrograman Sisi Server*, *Django Framework*, *Django ORM*, *REST API*, *Docker*)
+- **Lessons**: 3 materi pelajaran terurut pada `PSS01`
 - **Enrollment**: `fauzan` terdaftar pada `PSS01`
-- **Assignment**: Tugas Django ORM pada `PSS01`
-- **Submission**: Jawaban dari student `fauzan` dengan nilai 87.50
+- **Assignments**: *Tugas Django ORM* dan *Tugas REST API* pada `PSS01`
+- **Submissions**: Jawaban dari student `fauzan` dengan nilai `87.50` dan `90.00`
 
 ### D. Mengakses Django Admin
 Buka browser pada URL:

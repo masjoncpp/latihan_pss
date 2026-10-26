@@ -75,31 +75,58 @@ class Command(BaseCommand):
             student.save()
         self.stdout.write(f"- Student: {student.username}")
 
-        # 4. Course (PSS01)
-        course, c_created = Course.objects.get_or_create(
-            code="PSS01",
-            defaults={
+        # 4. Courses (PSS01 - PSS05)
+        courses = [
+            {
+                "code": "PSS01",
                 "title": "Pemrograman Sisi Server",
-                "description": "Django Framework dan ORM",
-                "lecturer": lecturer_objects["suprayogi"],
-                "is_active": True,
+                "description": "Belajar backend development dengan Django.",
             },
-        )
-        self.stdout.write(f"- Course: {course.code} - {course.title}")
+            {
+                "code": "PSS02",
+                "title": "Django Framework",
+                "description": "Mempelajari framework Django dan struktur project.",
+            },
+            {
+                "code": "PSS03",
+                "title": "Django ORM",
+                "description": "Mempelajari database dan ORM menggunakan Django.",
+            },
+            {
+                "code": "PSS04",
+                "title": "REST API",
+                "description": "Mempelajari pembuatan REST API dengan Django.",
+            },
+            {
+                "code": "PSS05",
+                "title": "Docker",
+                "description": "Mempelajari containerisasi aplikasi Django.",
+            },
+        ]
+        for data in courses:
+            Course.objects.get_or_create(
+                code=data["code"],
+                defaults={
+                    "title": data["title"],
+                    "description": data["description"],
+                    "lecturer": lecturer_objects["suprayogi"],
+                },
+            )
+        course = Course.objects.get(code="PSS01")
+        self.stdout.write(f"- Courses created/verified: {len(courses)}")
 
         # 5. Lessons
-        lessons_data = [
-            (1, "Pengenalan Backend", "Pengenalan dasar backend architecture dan konsep web server."),
-            (2, "Pola Arsitektur Backend", "Memahami konsep Model-View-Template (MVT) dan arsitektur aplikasi."),
-            (3, "Kontaienerisasi dengan Docker", "Membangun reproducible development environment menggunakan Docker Compose."),
+        lessons = [
+            "Pengenalan Backend",
+            "Pola Arsitektur Backend",
+            "Containerisasi dengan Docker",
         ]
-        for order, title, content in lessons_data:
-            lesson, _ = Lesson.objects.update_or_create(
+        for order, title in enumerate(lessons, start=1):
+            Lesson.objects.get_or_create(
                 course=course,
                 order=order,
                 defaults={
                     "title": title,
-                    "content": content,
                 },
             )
         self.stdout.write(f"- Lessons verified for {course.code}")
@@ -111,8 +138,8 @@ class Command(BaseCommand):
         )
         self.stdout.write(f"- Enrollment: {enrollment}")
 
-        # 7. Assignment
-        assignment, _ = Assignment.objects.get_or_create(
+        # 7. Assignments
+        assignment1, _ = Assignment.objects.get_or_create(
             course=course,
             title="Tugas Django ORM",
             defaults={
@@ -120,17 +147,31 @@ class Command(BaseCommand):
                 "deadline": timezone.now() + timedelta(days=7),
             },
         )
-        self.stdout.write(f"- Assignment: {assignment.title}")
-
-        # 8. Submission
-        submission, _ = Submission.objects.get_or_create(
-            assignment=assignment,
-            student=student,
+        assignment2, _ = Assignment.objects.get_or_create(
+            course=course,
+            title="Tugas REST API",
             defaults={
-                "content": "Saya telah menyelesaikan implementasi Django ORM dan relationship.",
-                "grade": 87.50,
+                "description": "Buat REST API sederhana menggunakan Django.",
+                "deadline": timezone.now() + timedelta(days=14),
             },
         )
-        self.stdout.write(f"- Submission by {student.username}: Grade {submission.grade}")
+        self.stdout.write(f"- Assignments: {assignment1.title}, {assignment2.title}")
 
-        self.stdout.write(self.style.SUCCESS("Database seeded successfully!"))
+        # 8. Submissions
+        Submission.objects.get_or_create(
+            assignment=assignment1,
+            student=student,
+            defaults={
+                "content": "Saya telah menyelesaikan implementasi Django ORM.",
+                "grade": 87.5,
+            },
+        )
+        Submission.objects.get_or_create(
+            assignment=assignment2,
+            student=student,
+            defaults={
+                "content": "Saya telah menyelesaikan REST API menggunakan Django.",
+                "grade": 90.0,
+            },
+        )
+        self.stdout.write(self.style.SUCCESS("Sample data berhasil dibuat."))
